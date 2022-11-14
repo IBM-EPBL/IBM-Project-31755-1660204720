@@ -92,16 +92,54 @@ def register():
                return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-def is_logged_in(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if "logged_in" in session:
-            return f(*args, **kwargs)
-        else:
-            flash("Please login", "info")
-            return redirect(url_for("login"))
+class LoginForm(Form):
+    username = StringField("Username", [validators.Length(min=4, max=100)])
+    password = PasswordField(
+        "Password",
+        [
+            validators.DataRequired(),
+        ],
+    )
 
-    return wrap
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if "logged_in" in session and session["logged_in"] == True:
+        flash("You are already logged in", "info")
+        return redirect(url_for("addTransactions"))
+    form = LoginForm(request.form)
+    if request.method == "POST" and form.validate():
+        username = form.username.data
+        password_input = form.password.data
+        #database
+        sql="SELECT * FROM user WHERE user_name=? or email=?"
+        stmt=ibm_db.prepare(conn,sql)
+        ibm_db.bind_param(stmt,1,username)
+        ibm_db.bind_param(stmt,2,username)
+        ibm_db.execute(stmt)
+        account=ibm_db.fetch_assoc(stmt)
+        print(account)
+        if account:
+            userID = account["ID"]
+            password = account["PASSWORD"]
+            role = account["ROLE"]
+            if sha256_crypt.verify(password_input, password):
+               session["logged_in"] = True
+               session["username"] = username
+               session["role"] = role
+               session["userID"] = userID
+               flash("Logged in successfully!")
+               return redirect(url_for("addTransactions"))
+            else:
+                error = "Invalid Password"
+                return render_template("login.html", form=form, error=error)
+        else:
+            error = "Username not found"
+            return render_template("login.html", form=form, error=error)
+
+    return render_template("login.html", form=form)
+
        
 if __name__=="__main__":
     app.run(debug=True)
