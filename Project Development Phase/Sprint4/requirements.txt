@@ -1,1 +1,13 @@
-
+flask
+sendgrid
+mailbox
+ibm_db
+wtforms
+itsdangerous
+flask_mail
+plotly
+timeago
+datetime
+configparser
+ssl
+functools
