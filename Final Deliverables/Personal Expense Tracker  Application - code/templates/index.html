@@ -1,0 +1,27 @@
+{% extends 'layout.html' %} {% block body %}
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+        .container {
+          position: relative;
+          text-align: center;
+          color: white;}
+        .centered {
+          position:relative;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+        </style>
+        </head>
+        <body>
+        
+        <div class="container">
+          <img src="../static/bg.jpg" alt="Snow" style="width:100% ; height: 75vh;">
+          <div class="centered">
+          <h2>Log your spendings, earnings & budget with ease to avoid financial crises.</h2>
+          <center class="sz">
+          <a class=" btn btn-outline-success btn-lg" href="\register">Register</a>
+           <a class=" btn btn-outline-success btn-lg" href="\login">Login</a></center></div>
+        </div>
+{% endblock %}
